@@ -1,0 +1,12 @@
+.project-card {
+    width: 18rem;
+    margin: 20px;
+}
+
+.card-container {
+    display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-row-gap: .5em;
+  grid-column-gap: 1em;
+  margin:50px;
+}
