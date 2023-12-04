@@ -28,36 +28,22 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getProject(@PathVariable("userId") long userId){
-        try{
-            User user = userAuthService.getUserById(userId);
-            return new ResponseEntity<User>(user, HttpStatus.OK);
-        }
-        catch (Exception ex){
-            return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<User> getUser(@PathVariable("userId") long userId){
+        User user = userAuthService.getUserById(userId);
+        return new ResponseEntity<User>(user, HttpStatus.OK);
 
     }
     @PostMapping("/signin")
-    public ResponseEntity<UserDTO> signin(@RequestParam long userId, @RequestParam String password) {
-        try {
-            UserDTO userDTO = userAuthService.signin(userId, password);
-            return new ResponseEntity<>(userDTO, HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<UserDTO> signin(@RequestBody Map<String, Object> requestBody) {
+        long userId = Long.parseLong(requestBody.get("userId").toString());
+        String password = (String) requestBody.get("password");
+        UserDTO userDTO = userAuthService.signin(userId, password);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @PostMapping("/signup")
     public ResponseEntity<UserDTO> signup(@RequestBody UserDTO userDTO) {
-        try {
-            System.out.println(userDTO);
-            UserDTO createdUser = userAuthService.signup(userDTO);
-            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-        } catch (Exception ex) {
-            System.out.println("Exception occurred: " + ex.getMessage());
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+        UserDTO createdUser = userAuthService.signup(userDTO);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 }

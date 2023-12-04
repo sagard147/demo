@@ -70,11 +70,17 @@ public class DonationService {
         if(project == null){
             throw new ApiRequestException("Provided Project not exist");
         }
+        if(project.getFundDemand() < project.getFundCollected() + donationCreateDTO.getFundAmount()){
+            throw new ApiRequestException("Donation Amount is more than remaining Fund required");
+        }
         Donation donation = new Donation();
         donation.setFundAmount(donationCreateDTO.getFundAmount());
         donation.setCurrency(donationCreateDTO.getCurrency());
         donation.setUser(user);
         donation.setProject(project);
-        return donationRepository.save(donation);
+        donationRepository.save(donation);
+        project.setFundCollected(project.getFundCollected()+donationCreateDTO.getFundAmount());
+        projectService.saveProject(project);
+        return donation;
     }
 }

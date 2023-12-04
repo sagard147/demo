@@ -52,6 +52,14 @@ public class Donation {
         this.currency = currency;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getFundAmount() {
         return fundAmount;
     }
@@ -99,6 +107,7 @@ public class Donation {
         donationDTO.setCurrency(this.getCurrency());
         donationDTO.setUserId(this.getUser().getId());
         donationDTO.setProjectId(this.getProject().getId());
+        donationDTO.setId(this.getId());
         return donationDTO;
     }
 }

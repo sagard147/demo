@@ -9,6 +9,7 @@ import com.crowdfund.demo.model.UserRole;
 import com.crowdfund.demo.repository.RolesRepository;
 import com.crowdfund.demo.repository.UserRepository;
 import com.crowdfund.demo.repository.UserRoleRepository;
+import com.crowdfund.demo.util.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,41 +47,35 @@ public class UserAuthService {
     }
 
     public UserDTO signin(long userId, String password) {
-        // Implement authentication logic (e.g., check credentials against the database)
-        // Throw AuthenticationException if authentication fails
+        Logger.log("Sign-in Entered "+userId);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalMonitorStateException("User not found"));
+                .orElseThrow(() -> new ApiRequestException("User not found"));
 
         if (!password.equals(user.getPassword())) {
-            throw new IllegalMonitorStateException("Incorrect password");
+            throw new ApiRequestException("Incorrect password");
         }
-
-
-        return toUserDTO(user);
+        UserRole userRole = userRoleRepository.findByUserId(userId);
+        Logger.log("User : " + userId);
+        Logger.log("Sign-in successful ");
+        return UserDTO.toUserDTO(user,userRole.getRole());
     }
 
     public UserDTO signup(UserDTO userDTO) {
-        System.out.println(userDTO.toString());
+        Logger.log("SignUp Entered "+userDTO.toString());
         String encodedPassword = userDTO.getPassword();
         Roles role= rolesRepository.findByRole(userDTO.getAccountType());
 
         User user = new User(userDTO.getName(), userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
-        System.out.println(user.toString());
+        Logger.log(user.toString());
         userRepository.save(user);
 
         UserRole userRole = new UserRole(user,role);
         userRoleRepository.save(userRole);
 
-        return toUserDTO(user);
-    }
-
-    private UserDTO toUserDTO(User user) {
-        // Convert User entity to UserDTO
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setName(user.getName());
-        userDTO.setEmail(user.getEmail());
+        userDTO = UserDTO.toUserDTO(user,role);
+        userDTO.setAccountType(userDTO.getAccountType().toString());
+        Logger.log("SignUp successful ");
         return userDTO;
     }
 }

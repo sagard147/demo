@@ -1,13 +1,15 @@
 package com.crowdfund.demo.mapper;
 
 import com.crowdfund.demo.model.Role;
+import com.crowdfund.demo.model.Roles;
+import com.crowdfund.demo.model.User;
+import com.crowdfund.demo.model.UserRole;
 
 public class UserDTO {
 
     private Long id;
     private String name;
     private String email;
-    private String userId;
     private String password;
     private Role accountType;
 
@@ -34,14 +36,6 @@ public class UserDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public void setPassword(String password) {
@@ -77,6 +71,25 @@ public class UserDTO {
         this.accountType = Role.valueOf(accountType);
     }
 
+    public static UserDTO toUserDTO(User user) {
+        // Convert User entity to UserDTO
+        UserDTO newUserDTO = new UserDTO();
+        newUserDTO.setId(user.getId());
+        newUserDTO.setName(user.getName());
+        newUserDTO.setEmail(user.getEmail());
+        return newUserDTO;
+    }
+
+    public static UserDTO toUserDTO(User user, Roles role) {
+        UserDTO newUserDTO = toUserDTO(user); // Reuse the logic from the other method
+
+        if (role != null) {
+            newUserDTO.setAccountType(role.getRole().toString());
+        }
+
+        return newUserDTO;
+    }
+
     // Optional: You may want to override toString() for logging or debugging
     @Override
     public String toString() {
@@ -85,7 +98,6 @@ public class UserDTO {
                 ", name='" + name + '\'' +
                 ", accountType='" + accountType + '\'' +
                 ", email='" + email + '\'' +
-                ", userId='" + userId + '\'' +
                 '}';
     }
 }

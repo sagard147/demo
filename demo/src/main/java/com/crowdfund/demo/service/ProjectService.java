@@ -83,6 +83,10 @@ public class ProjectService {
         return project;
     }
 
+    public void saveProject(Project project){
+        projectRepository.save(project);
+    }
+
     public List<Project> getDefaultProjects(Exception e) {
         return new ArrayList<>();
     }

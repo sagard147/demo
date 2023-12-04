@@ -1,6 +1,8 @@
 package com.crowdfund.demo.mapper;
 
 public class DonationDTO {
+
+    private Long id;
     private Long fundAmount;
     private String currency;
     private Long userId;
@@ -17,18 +19,23 @@ public class DonationDTO {
 
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getFundAmount() {
         return fundAmount;
     }
-
     public void setFundAmount(Long fundAmount) {
         this.fundAmount = fundAmount;
     }
-
     public String getCurrency() {
         return currency;
     }
-
     public void setCurrency(String currency) {
         this.currency = currency;
     }
@@ -40,11 +47,9 @@ public class DonationDTO {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
-
     public Long getProjectId() {
         return projectId;
     }
-
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }

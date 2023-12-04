@@ -12,7 +12,7 @@ public class Helper {
     private static int TEXT_MAX_LEN = 1000;
     private static long FUN_DEMAND_MIN = 10000L;
     private static long FUN_DEMAND_MAX = 100000L;
-    private static long DONATION_MIN = 100L;
+    private static long DONATION_MIN = 1L;
     private static HashSet<String> currencySet = new HashSet<>(Set.of("INR"));
     public static boolean isValidStringId(String s) {
         try {
