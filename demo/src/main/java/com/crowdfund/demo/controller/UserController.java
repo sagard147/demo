@@ -12,6 +12,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(path = "api/v1/users")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS })
 public class UserController {
     private final UserAuthService userAuthService;
 
@@ -35,9 +36,9 @@ public class UserController {
     }
     @PostMapping("/signin")
     public ResponseEntity<UserDTO> signin(@RequestBody Map<String, Object> requestBody) {
-        long userId = Long.parseLong(requestBody.get("userId").toString());
+        String emailId = (String) requestBody.get("emailId");
         String password = (String) requestBody.get("password");
-        UserDTO userDTO = userAuthService.signin(userId, password);
+        UserDTO userDTO = userAuthService.signin(emailId, password);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 

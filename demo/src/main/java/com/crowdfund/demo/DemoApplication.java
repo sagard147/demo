@@ -36,20 +36,20 @@ public class DemoApplication {
 			Project project = new Project(
 					"Adidas",
 					"Des",
-					(long)100,"CERR");
+					(long)10000,"INR");
 
 			Project project1 = new Project(
 					"nike",
 					"Des",
-					(long)100,"CERR");
+					(long)20000,"INR");
 
 			Project project2 = new Project(
 					"Run",
 					"Des",
-					(long)100,"CERR");
+					(long)100,"INR");
 
-			User user1 = new User("Sam","a@a");
-			User user2 = new User("Ram","b@b");
+			User user1 = new User("Sam","hey1","a@a","bio1","address 1");
+			User user2 = new User("Ram","bye1","b@b","bio2","address 2");
 
 			UserRole userRole1 = new UserRole(user1, innovatorRole);
 			UserRole userRole2 = new UserRole(user2, innovatorRole);
@@ -67,8 +67,8 @@ public class DemoApplication {
 			projectRepository.save(project1);
 			projectRepository.save(project2);
 
-			User user3 = new User("DonSam","Dona@a");
-			User user4 = new User("DonRam","Donb@b");
+			User user3 = new User("DonSam","hey","na@a","bio3","address 3");
+			User user4 = new User("DonRam","bye","nb@b","bio4","address 4");
 			UserRole userRole3 = new UserRole(user3, donorRole);
 			UserRole userRole4 = new UserRole(user4, donorRole);
 			userRepository.save(user3);
@@ -76,17 +76,17 @@ public class DemoApplication {
 			userRoleRepository.save(userRole3);
 			userRoleRepository.save(userRole4);
 
-			Donation donation1 = new Donation( 100L, "CERR");
+			Donation donation1 = new Donation( 1000L, "INR");
 			donation1.setProject(project);
 			donation1.setUser(user3);
 			donationRepository.save(donation1);
 
-			Donation donation2 = new Donation( 200L, "CERR");
+			Donation donation2 = new Donation( 2000L, "INR");
 			donation2.setProject(project1);
 			donation2.setUser(user3);
 			donationRepository.save(donation2);
 
-			Donation donation3 = new Donation( 200L, "CERR");
+			Donation donation3 = new Donation( 2000L, "INR");
 			donation3.setProject(project);
 			donation3.setUser(user4);
 			donationRepository.save(donation3);

@@ -1,12 +1,11 @@
 .radio-box-container {
     display: flex;
-
-    div {
-        margin-right: 80px;
-
-        .form-check-input {
-            margin-right: 5px;
-        }
-    }
 }
 
+.radio-box-container > div {
+    margin-right: 80px;
+}
+
+.radio-box-container > div > .form-check-input {
+    margin-right: 5px;
+}

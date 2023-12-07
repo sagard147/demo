@@ -2,6 +2,8 @@ package com.crowdfund.demo.mapper;
 
 import com.crowdfund.demo.model.Project;
 
+import java.util.Date;
+
 public class ProjectDTO {
 
     private Long id;
@@ -11,6 +13,7 @@ public class ProjectDTO {
     private long fundCollected;
     private String currency;
     private Long userId;
+    private Date createdOn;
 
     public Long getId() {
         return id;
@@ -68,6 +71,14 @@ public class ProjectDTO {
         this.userId = userId;
     }
 
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+
     public static ProjectDTO fromProject(Project project) {
         ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setId(project.getId());
@@ -77,6 +88,7 @@ public class ProjectDTO {
         projectDTO.setFundCollected(project.getFundCollected());
         projectDTO.setCurrency(project.getCurrency());
         projectDTO.setUserId(project.getUser() != null ? project.getUser().getId() : null);
+        projectDTO.setCreatedOn(project.getCreatedOn());
         return projectDTO;
     }
 

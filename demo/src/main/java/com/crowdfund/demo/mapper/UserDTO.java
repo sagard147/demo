@@ -8,8 +8,12 @@ import com.crowdfund.demo.model.UserRole;
 public class UserDTO {
 
     private Long id;
-    private String name;
+    private String firstName;
+
+    private String lastName;
     private String email;
+    private String bio;
+    private String address;
     private String password;
     private Role accountType;
 
@@ -19,11 +23,14 @@ public class UserDTO {
         // Default constructor
     }
 
-    public UserDTO(Long id, String name, String email, Role accountType) {
+    public UserDTO(Long id, String name, String lastName,String email, Role accountType, String bio, String address) {
         this.id = id;
-        this.name = name;
+        this.firstName = name;
+        this.lastName = lastName;
         this.email = email;
         this.accountType = accountType;
+        this.bio = bio;
+        this.address = address;
     }
 
     // Other getters and setters
@@ -46,13 +53,6 @@ public class UserDTO {
         return password;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getEmail() {
         return email;
@@ -71,12 +71,47 @@ public class UserDTO {
         this.accountType = Role.valueOf(accountType);
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public static UserDTO toUserDTO(User user) {
         // Convert User entity to UserDTO
         UserDTO newUserDTO = new UserDTO();
         newUserDTO.setId(user.getId());
-        newUserDTO.setName(user.getName());
+        newUserDTO.setFirstName(user.getFirstName());
+        newUserDTO.setLastName(user.getLastName());
         newUserDTO.setEmail(user.getEmail());
+        newUserDTO.setBio(user.getBio());
+        newUserDTO.setAddress(user.getAddress());
         return newUserDTO;
     }
 
@@ -95,7 +130,7 @@ public class UserDTO {
     public String toString() {
         return "UserDTO{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + firstName + '\'' +
                 ", accountType='" + accountType + '\'' +
                 ", email='" + email + '\'' +
                 '}';

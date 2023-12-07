@@ -9,6 +9,7 @@ import com.crowdfund.demo.model.UserRole;
 import com.crowdfund.demo.repository.RolesRepository;
 import com.crowdfund.demo.repository.UserRepository;
 import com.crowdfund.demo.repository.UserRoleRepository;
+import com.crowdfund.demo.util.Helper;
 import com.crowdfund.demo.util.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,26 +47,38 @@ public class UserAuthService {
         return userOptional.orElse(null);
     }
 
-    public UserDTO signin(long userId, String password) {
-        Logger.log("Sign-in Entered "+userId);
-        User user = userRepository.findById(userId)
+    public UserDTO signin(String emailId, String password) {
+        Logger.log("Sign-in Entered : "+emailId);
+        if(emailId == null || password == null){
+            throw new ApiRequestException("Invalid sign-in params");
+        }
+        User user = userRepository.findbyEmailId(emailId)
                 .orElseThrow(() -> new ApiRequestException("User not found"));
 
         if (!password.equals(user.getPassword())) {
             throw new ApiRequestException("Incorrect password");
         }
-        UserRole userRole = userRoleRepository.findByUserId(userId);
-        Logger.log("User : " + userId);
+        UserRole userRole = userRoleRepository.findByUserId(user.getId());
+        Logger.log("User : " + user.getId());
         Logger.log("Sign-in successful ");
         return UserDTO.toUserDTO(user,userRole.getRole());
     }
 
     public UserDTO signup(UserDTO userDTO) {
         Logger.log("SignUp Entered "+userDTO.toString());
+        if(!Helper.validateAddUser(userDTO)){
+            Logger.log("User with invalid data");
+            throw new ApiRequestException("User with invalid data");
+        }
+        User existingUser = userRepository.findbyEmailId(userDTO.getEmail()).orElse(null);
+        if(existingUser!=null){
+            Logger.log("User with email already exists : "+userDTO.getEmail());
+            throw new ApiRequestException("User with email already exists "+userDTO.getEmail());
+        }
         String encodedPassword = userDTO.getPassword();
         Roles role= rolesRepository.findByRole(userDTO.getAccountType());
 
-        User user = new User(userDTO.getName(), userDTO.getEmail());
+        User user = new User(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail(), userDTO.getBio(), userDTO.getAddress());
         user.setPassword(userDTO.getPassword());
         Logger.log(user.toString());
         userRepository.save(user);
@@ -76,6 +89,7 @@ public class UserAuthService {
         userDTO = UserDTO.toUserDTO(user,role);
         userDTO.setAccountType(userDTO.getAccountType().toString());
         Logger.log("SignUp successful ");
+        userDTO.setPassword(null);
         return userDTO;
     }
 }

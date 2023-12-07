@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static java.lang.Thread.sleep;
+
 @Service
 public class DonationService {
     private final DonationRepository donationRepository;
@@ -63,24 +65,48 @@ public class DonationService {
             throw new ApiRequestException("Project with invalid data");
         }
         User user = userAuthService.getUserById(donationCreateDTO.getUserId());
-        Project project = projectService.getProjectById(donationCreateDTO.getProjectId());
+        //Project project = projectService.getProjectById(donationCreateDTO.getProjectId());
         if(user == null){
             throw new ApiRequestException("Provided User not exist");
         }
-        if(project == null){
-            throw new ApiRequestException("Provided Project not exist");
-        }
-        if(project.getFundDemand() < project.getFundCollected() + donationCreateDTO.getFundAmount()){
-            throw new ApiRequestException("Donation Amount is more than remaining Fund required");
-        }
+//        if(project == null){
+//            throw new ApiRequestException("Provided Project not exist");
+//        }
+//        if(project.getFundDemand() < project.getFundCollected() + donationCreateDTO.getFundAmount()){
+//            throw new ApiRequestException("Donation Amount is more than remaining Fund required");
+//        }
         Donation donation = new Donation();
         donation.setFundAmount(donationCreateDTO.getFundAmount());
         donation.setCurrency(donationCreateDTO.getCurrency());
         donation.setUser(user);
-        donation.setProject(project);
-        donationRepository.save(donation);
-        project.setFundCollected(project.getFundCollected()+donationCreateDTO.getFundAmount());
-        projectService.saveProject(project);
+        donation.setTransactionDate(new Date());
+        saveDonation(donationCreateDTO.getProjectId(), donation);
         return donation;
+    }
+
+    private synchronized void saveDonation(long projectId, Donation donation){
+        try{
+            Logger.log("Entered saveDonation");
+            Project project = projectService.getProjectById(projectId);
+            if(project == null){
+                throw new ApiRequestException("Provided Project not exist");
+            }
+            if(donation.getFundAmount()+project.getFundCollected() > project.getFundDemand()){
+                throw new ApiRequestException("Donation Amount is more than remaining Fund required");
+            }
+            donation.setProject(project);
+            donationRepository.save(donation);
+            project.setFundCollected(project.getFundCollected()+donation.getFundAmount());
+            projectService.saveProject(project);
+            Logger.log("SaveDonation successful");
+        }
+        catch (ApiRequestException ex){
+            Logger.log("Validation Failed in saveDonation : "+ex.getMessage());
+            throw ex;
+        }
+        catch (Exception ex){
+            Logger.log("Exception in saveDonation : "+ex.getMessage());
+            throw new ApiRequestException("Something went wrong, try after sometime!");
+        }
     }
 }

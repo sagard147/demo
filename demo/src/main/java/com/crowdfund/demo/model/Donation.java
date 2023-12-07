@@ -3,6 +3,8 @@ package com.crowdfund.demo.model;
 import com.crowdfund.demo.mapper.DonationDTO;
 import jakarta.persistence.*;
 
+import java.util.Date;
+
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity(name = "Donation")
@@ -36,6 +38,14 @@ public class Donation {
     )
     String currency;
 
+    @Column(
+            name = "transactionDate",
+            nullable = false,
+            columnDefinition = "DATE"
+    )
+    @Temporal(TemporalType.DATE)
+    private Date transactionDate;
+
     @ManyToOne
     @JoinColumn(name = "projectId")
     private Project project;
@@ -50,6 +60,7 @@ public class Donation {
     public Donation(Long fundAmount, String currency) {
         this.fundAmount = fundAmount;
         this.currency = currency;
+        this.transactionDate = new Date();
     }
 
     public Long getId() {
@@ -92,6 +103,14 @@ public class Donation {
         this.user = user;
     }
 
+    public Date getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setTransactionDate(Date transactionDate) {
+        this.transactionDate = transactionDate;
+    }
+
     @Override
     public String  toString() {
         return "Donation{" +
@@ -106,8 +125,12 @@ public class Donation {
         donationDTO.setFundAmount(this.getFundAmount());
         donationDTO.setCurrency(this.getCurrency());
         donationDTO.setUserId(this.getUser().getId());
+        donationDTO.setUserName(this.getUser().getFirstName() + " " + this.getUser().getLastName());
+        donationDTO.setUserEmail(this.getUser().getEmail());
         donationDTO.setProjectId(this.getProject().getId());
+        donationDTO.setProjectName(this.getProject().getTitle());
         donationDTO.setId(this.getId());
+        donationDTO.setTransactionDate(this.getTransactionDate());
         return donationDTO;
     }
 }

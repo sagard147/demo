@@ -2,6 +2,7 @@ package com.crowdfund.demo.model;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
 import java.util.List;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
@@ -63,6 +64,14 @@ public class Project {
     )
     String currency;
 
+    @Column(
+            name = "createdOn",
+            nullable = false,
+            columnDefinition = "DATE"
+    )
+    @Temporal(TemporalType.DATE)
+    private Date createdOn;
+
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
@@ -80,6 +89,7 @@ public class Project {
         this.fundDemand = fundDemand;
         this.fundCollected = 0;
         this.currency = currency;
+        this.createdOn = new Date();
     }
 
     public Project() {
@@ -139,6 +149,18 @@ public class Project {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
     }
 
     @Override

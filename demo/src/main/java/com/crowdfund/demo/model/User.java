@@ -30,11 +30,18 @@ public class User {
     private Long id;
 
     @Column(
-            name = "name",
+            name = "firstName",
             nullable = false,
             columnDefinition = "TEXT"
     )
-    private String name;
+    private String firstName;
+
+    @Column(
+            name = "lastName",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String lastName;
 
     @Column(
             name = "email",
@@ -42,6 +49,20 @@ public class User {
             columnDefinition = "TEXT"
     )
     private String email;
+
+    @Column(
+            name = "bio",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String bio;
+
+    @Column(
+            name = "address",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String address;
 
     @Column(
             name = "password",
@@ -62,23 +83,19 @@ public class User {
     public User() {
     }
 
-    public User(String name, String email) {
-        this.name = name;
+    public User(String firstName, String lastName, String email, String bio, String address) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = "";
+        this.bio = bio;
+        this.address = address;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getEmail() {
         return email;
@@ -96,6 +113,22 @@ public class User {
         this.password = password;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public UserRole getUserRole() {
         if(!this.userRoles.isEmpty()){
             this.userRoles.get(0);
@@ -103,11 +136,27 @@ public class User {
         return null;
     }
 
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public String  toString() {
         return "User{" +
                 "id=" + id +
-                ", name ='" + name + '\'' +
+                ", name ='" + firstName + '\'' +
                 ", email='" + email +
                 '}';
     }

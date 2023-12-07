@@ -1,0 +1,19 @@
+.selectedproject-card,
+.add-new-project-card {
+    width: 600px;
+    margin: 5% 0 0 30%;
+}
+
+.selectedproject-container>div>div:nth-child(2) {
+    text-align: left;
+}
+
+.add-project-container>div>div:nth-child(1) {
+    text-align: left;
+}
+
+.add-donation-form-container {
+    div>div>button {
+        width: 100%;
+    }
+}
