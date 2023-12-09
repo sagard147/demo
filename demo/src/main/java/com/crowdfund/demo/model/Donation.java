@@ -1,5 +1,6 @@
 package com.crowdfund.demo.model;
 
+import com.crowdfund.demo.exception.ApiRequestException;
 import com.crowdfund.demo.mapper.DonationDTO;
 import jakarta.persistence.*;
 
@@ -121,16 +122,21 @@ public class Donation {
     }
 
     public DonationDTO toDonationResponse(){
-        DonationDTO donationDTO = new DonationDTO();
-        donationDTO.setFundAmount(this.getFundAmount());
-        donationDTO.setCurrency(this.getCurrency());
-        donationDTO.setUserId(this.getUser().getId());
-        donationDTO.setUserName(this.getUser().getFirstName() + " " + this.getUser().getLastName());
-        donationDTO.setUserEmail(this.getUser().getEmail());
-        donationDTO.setProjectId(this.getProject().getId());
-        donationDTO.setProjectName(this.getProject().getTitle());
-        donationDTO.setId(this.getId());
-        donationDTO.setTransactionDate(this.getTransactionDate());
-        return donationDTO;
+        try{
+            DonationDTO donationDTO = new DonationDTO();
+            donationDTO.setFundAmount(this.getFundAmount());
+            donationDTO.setCurrency(this.getCurrency());
+            donationDTO.setUserId(this.getUser().getId());
+            donationDTO.setUserName(this.getUser().getFirstName() + " " + this.getUser().getLastName());
+            donationDTO.setUserEmail(this.getUser().getEmail());
+            donationDTO.setProjectId(this.getProject().getId());
+            donationDTO.setProjectName(this.getProject().getTitle());
+            donationDTO.setId(this.getId());
+            donationDTO.setTransactionDate(this.getTransactionDate());
+            return donationDTO;
+        }
+        catch (Exception ex){
+            throw new ApiRequestException("Something Went wrong");
+        }
     }
 }
