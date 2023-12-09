@@ -14,6 +14,7 @@ public class ProjectDTO {
     private String currency;
     private Long userId;
     private Date createdOn;
+    private Date updatedOn;
 
     public Long getId() {
         return id;
@@ -79,6 +80,14 @@ public class ProjectDTO {
         this.createdOn = createdOn;
     }
 
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
     public static ProjectDTO fromProject(Project project) {
         ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setId(project.getId());
@@ -89,6 +98,7 @@ public class ProjectDTO {
         projectDTO.setCurrency(project.getCurrency());
         projectDTO.setUserId(project.getUser() != null ? project.getUser().getId() : null);
         projectDTO.setCreatedOn(project.getCreatedOn());
+        projectDTO.setUpdatedOn(project.getUpdatedOn());
         return projectDTO;
     }
 

@@ -46,4 +46,10 @@ public class ProjectController {
         return new ResponseEntity<ProjectDTO>(Helper.toProjectDTO(project), HttpStatus.OK);
     }
 
+    @PostMapping("/{projectId}")
+    public ResponseEntity<ProjectDTO> updateProject(@PathVariable("projectId") long projectId, @RequestBody ProjectDTO addProject){
+        Project project = projectService.updateProject(projectId, addProject);
+        return new ResponseEntity<ProjectDTO>(Helper.toProjectDTO(project), HttpStatus.OK);
+    }
+
 }

@@ -72,6 +72,14 @@ public class Project {
     @Temporal(TemporalType.DATE)
     private Date createdOn;
 
+    @Column(
+            name = "updatedOn",
+            nullable = false,
+            columnDefinition = "DATE"
+    )
+    @Temporal(TemporalType.DATE)
+    private Date updatedOn;
+
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
@@ -90,6 +98,7 @@ public class Project {
         this.fundCollected = 0;
         this.currency = currency;
         this.createdOn = new Date();
+        this.updatedOn = new Date();
     }
 
     public Project() {
@@ -161,6 +170,14 @@ public class Project {
 
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
+    }
+
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
     }
 
     @Override

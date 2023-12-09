@@ -72,13 +72,35 @@ public class ProjectService {
             throw new ApiRequestException("Project with title already present");
         }
         User user = userAuthService.getUserById(projectDTO.getUserId());
-        /*UserRole userRole = user.getUserRole();
-        if(userRole==null || userRole.getRole().getRole()==Role.DONOR){
-            Logger.log("UserRole unAuth to create Project");
-            throw new ApiRequestException("UserRole unAuth to create Project");
-        }*/
         Project project = projectDTO.toProject();
+        project.setUpdatedOn(new Date());
         project.setUser(user);
+        projectRepository.save(project);
+        return project;
+    }
+
+    public Project updateProject(long projectId, ProjectDTO projectDTO){
+        if(!Helper.validateAddProject(projectDTO)){
+            Logger.log("Project with invalid data");
+            throw new ApiRequestException("Project with invalid data");
+        }
+        Project project = projectRepository.findById(projectDTO.getId()).orElse(null);
+        if(project == null){
+            Logger.log("Project is not found  : "+projectDTO.getTitle());
+            throw new ApiRequestException("Project is not found");
+        }
+        if(project.getFundCollected() > 0L){
+            Logger.log("Project is collected donation  : "+projectDTO.getTitle());
+            throw new ApiRequestException("Project is collected donation");
+        }
+        if(!Objects.equals(projectDTO.getUserId(), project.getUser().getId())){
+            Logger.log("User not allowed  : "+projectDTO.getTitle());
+            throw new ApiRequestException("User not allowed");
+        }
+        project.setTitle(projectDTO.getTitle());
+        project.setDescription(projectDTO.getDescription());
+        project.setFundDemand(projectDTO.getFundDemand());
+        project.setUpdatedOn(new Date());
         projectRepository.save(project);
         return project;
     }

@@ -9,6 +9,7 @@ import com.crowdfund.demo.model.UserRole;
 import com.crowdfund.demo.repository.RolesRepository;
 import com.crowdfund.demo.repository.UserRepository;
 import com.crowdfund.demo.repository.UserRoleRepository;
+import com.crowdfund.demo.util.Encryptor;
 import com.crowdfund.demo.util.Helper;
 import com.crowdfund.demo.util.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class UserAuthService {
         User user = userRepository.findbyEmailId(emailId)
                 .orElseThrow(() -> new ApiRequestException("User not found"));
 
-        if (!password.equals(user.getPassword())) {
+        if (!password.equals(Encryptor.decrypt(user.getPassword()))) {
             throw new ApiRequestException("Incorrect password");
         }
         UserRole userRole = userRoleRepository.findByUserId(user.getId());
@@ -75,11 +76,10 @@ public class UserAuthService {
             Logger.log("User with email already exists : "+userDTO.getEmail());
             throw new ApiRequestException("User with email already exists "+userDTO.getEmail());
         }
-        String encodedPassword = userDTO.getPassword();
         Roles role= rolesRepository.findByRole(userDTO.getAccountType());
 
         User user = new User(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail(), userDTO.getBio(), userDTO.getAddress());
-        user.setPassword(userDTO.getPassword());
+        user.setPassword(Encryptor.encrypt(userDTO.getPassword()));
         Logger.log(user.toString());
         userRepository.save(user);
 

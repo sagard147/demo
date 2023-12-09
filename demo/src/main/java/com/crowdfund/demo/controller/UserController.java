@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> listAllProject(@RequestParam Map<String, String> reqParam){
+    public ResponseEntity<List<User>> listAllUsers(@RequestParam Map<String, String> reqParam){
         // Filters search param & ProjectType
         List<User> user = userAuthService.ListUser();;
         return new ResponseEntity<List<User>>(user, HttpStatus.OK);
