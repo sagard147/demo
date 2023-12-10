@@ -18,16 +18,16 @@ import static java.lang.Thread.sleep;
 
 @Service
 @EnableCaching
-public class DonationService {
+public class DonationService implements IDonationService {
     private final DonationRepository donationRepository;
-    private final ProjectService projectService;
+    private final IProjectService projectService;
 
-    private final UserAuthService userAuthService;
+    private final IUserAuthService userAuthService;
 
     @Autowired
     public DonationService(DonationRepository donationRepository,
-                           ProjectService projectService,
-                           UserAuthService userAuthService){
+                           IProjectService projectService,
+                           IUserAuthService userAuthService){
         this.donationRepository = donationRepository;
         this.projectService = projectService;
         this.userAuthService = userAuthService;

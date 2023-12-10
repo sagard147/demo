@@ -20,12 +20,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserAuthService {
+public class UserAuthService implements IUserAuthService {
 
     private final UserRepository userRepository;
 
     private final UserRoleRepository userRoleRepository;
-
 
     RolesRepository rolesRepository;
 

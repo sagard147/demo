@@ -2,7 +2,7 @@ package com.crowdfund.demo.controller;
 
 import com.crowdfund.demo.mapper.DonationDTO;
 import com.crowdfund.demo.model.Donation;
-import com.crowdfund.demo.service.DonationService;
+import com.crowdfund.demo.service.*;
 import com.crowdfund.demo.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "api/v1/donations")
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS })
 public class DonationController {
-    private final DonationService donationService;
+    private final IDonationService donationService;
     @Autowired
-    public DonationController(DonationService donationService) {
+    public DonationController(IDonationService donationService) {
         this.donationService = donationService;
     }
 

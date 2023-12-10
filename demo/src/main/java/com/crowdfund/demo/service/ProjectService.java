@@ -14,7 +14,7 @@ import com.crowdfund.demo.repository.ProjectRepository;
 import java.util.*;
 
 @Service
-public class ProjectService {
+public class ProjectService implements IProjectService{
     private final ProjectRepository projectRepository;
     private final UserAuthService userAuthService;
 

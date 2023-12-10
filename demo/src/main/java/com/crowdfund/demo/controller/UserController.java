@@ -2,7 +2,7 @@ package com.crowdfund.demo.controller;
 
 import com.crowdfund.demo.mapper.*;
 import com.crowdfund.demo.model.*;
-import com.crowdfund.demo.service.UserAuthService;
+import com.crowdfund.demo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +14,10 @@ import java.util.*;
 @RequestMapping(path = "api/v1/users")
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS })
 public class UserController {
-    private final UserAuthService userAuthService;
+    private final IUserAuthService userAuthService;
 
     @Autowired
-    public UserController(UserAuthService userAuthService) {
+    public UserController(IUserAuthService userAuthService) {
         this.userAuthService = userAuthService;
     }
 

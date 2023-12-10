@@ -5,7 +5,7 @@ import java.util.*;
 import com.crowdfund.demo.exception.ApiRequestException;
 import com.crowdfund.demo.mapper.ProjectDTO;
 import com.crowdfund.demo.model.Project;
-import com.crowdfund.demo.service.ProjectService;
+import com.crowdfund.demo.service.*;
 import com.crowdfund.demo.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS })
 public class ProjectController {
 
-    private final ProjectService projectService;
+    private final IProjectService projectService;
     @Autowired
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(IProjectService projectService) {
         this.projectService = projectService;
     }
 
