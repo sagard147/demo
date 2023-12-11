@@ -20,7 +20,7 @@ export default class Profile extends Component {
           />
           <div className="card-body">
             <h5 className="card-title">{`${user.firstName} ${user.lastName}`}</h5>
-            <p className="card-text">
+            <p className="card-text profile-info">
               <strong>Email:</strong> {user.email}
               <br />
               <strong>Bio:</strong> {user.bio}

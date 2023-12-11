@@ -27,6 +27,13 @@
   }
 }
 
+.card-title {
+  display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .card-text {
   height: 100px;
   overflow-y: scroll;
@@ -61,4 +68,10 @@
 
 .bg-grey {
   background-color: grey;
+}
+
+.total-projects {
+  margin-top: -10px;
+  font-size: 12px;
+  color: ghostwhite !important;
 }

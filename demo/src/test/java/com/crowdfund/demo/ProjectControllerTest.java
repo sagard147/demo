@@ -1,11 +1,14 @@
 package com.crowdfund.demo;
+import static org.mockito.Mockito.*;
 
+import org.mockito.ArgumentMatchers;
 import com.crowdfund.demo.exception.ApiRequestException;
 import com.crowdfund.demo.mapper.ProjectDTO;
 import com.crowdfund.demo.model.*;
 import com.crowdfund.demo.controller.ProjectController;
 import com.crowdfund.demo.service.ProjectService;
 import com.crowdfund.demo.util.*;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,5 +63,29 @@ class ProjectControllerTest {
 
         assertThrows(ApiRequestException.class, () -> projectController.getProject(projectId));
     }
+
+    @Test
+    void testAddProjectWithException() {
+        // Arrange
+        ProjectDTO addProject = new ProjectDTO();
+
+        when(projectService.addProject(addProject)).thenThrow(new RuntimeException("Some error occurred"));
+
+        // Act and Assert
+        assertThrows(RuntimeException.class, () -> projectController.addProject(addProject));
+    }
+
+    @Test
+    void testUpdateProjectNotFound() {
+        // Arrange
+        long projectId = 1L;
+        ProjectDTO updateProject = new ProjectDTO();
+
+        when(projectService.updateProject(projectId, updateProject)).thenThrow(new ApiRequestException("Project Not Present"));
+
+        // Act and Assert
+        assertThrows(ApiRequestException.class, () -> projectController.updateProject(projectId, updateProject));
+    }
+
 }
 

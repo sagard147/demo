@@ -2,28 +2,12 @@ import React, { useState, useEffect } from "react";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./App.css";
-import Login from "./components/login.component";
-import SignUp from "./components/signup.component";
+import Login from "./components/login/login.component";
+import SignUp from "./components/signup/signup.component";
 import Home from "./components/home/home.component";
+import { CROWDFUND_SESSION_NAME, COMPONENTS } from './helpers/constants';
+import { getSession } from './helpers/utils';
 
-// TODO: Replace constants for HOME, SIGNIN and SIGNUP
-
-const getSession = (key) => {
-  const sessionData = sessionStorage.getItem(key);
-  if (sessionData) {
-    const parsedData = JSON.parse(sessionData);
-    const currentTime = new Date().getTime();
-
-    // Check if the session has not expired
-    if (parsedData.expirationTime > currentTime) {
-      return parsedData.data;
-    } else {
-      // Remove the expired session
-      sessionStorage.removeItem(key);
-    }
-  }
-  return null;
-};
 
 
 function App() {
@@ -32,11 +16,11 @@ function App() {
 
   useEffect(() => {
       // Check for an existing user session in sessionStorage
-      const storedUser = getSession("crowdFundUser");
-      if (false && storedUser) {
+      const storedUser = getSession(CROWDFUND_SESSION_NAME);
+      if (storedUser) {
         storedUser.role = storedUser.accountType;
         setUser(storedUser);
-        assignComponent("HOME");
+        assignComponent(COMPONENTS.HOME);
       }
     }, []);
 
@@ -48,17 +32,22 @@ function App() {
   const onSuccessFullSignIn = (userObj) => {
     userObj.role = userObj.accountType;
     setUser(userObj);
-    assignComponent("HOME");
+    assignComponent(COMPONENTS.HOME);
   };
+
+  const logoutUser = () => {
+    sessionStorage.removeItem(CROWDFUND_SESSION_NAME);
+    assignComponent(COMPONENTS.LOGIN)
+  }
 
   const getComponent = () => {
     switch (selectedComponent) {
-      case "LOGIN":
+      case COMPONENTS.LOGIN:
         return <Login onSuccessFullSignIn={onSuccessFullSignIn} />;
-      case "SIGNUP":
+      case COMPONENTS.SIGNUP:
         return <SignUp onSuccessFullSignIn={onSuccessFullSignIn} />;
-      case "HOME":
-        return <Home user={user} />;
+      case COMPONENTS.HOME:
+        return <Home user={user} onLogout={logoutUser}/>;
       default: return <></>;
     }
   };
@@ -73,7 +62,7 @@ function App() {
               <a
                 class="nav-link"
                 href="#"
-                onClick={() => assignComponent("LOGIN")}
+                // onClick={() => assignComponent(COMPONENTS.LOGIN)}
               >
                 Crowdfunding
               </a>
@@ -84,7 +73,7 @@ function App() {
                   <a
                     class="nav-link"
                     href="#"
-                    onClick={() => assignComponent("LOGIN")}
+                    onClick={() => assignComponent(COMPONENTS.LOGIN)}
                   >
                     Login
                   </a>
@@ -93,7 +82,7 @@ function App() {
                   <a
                     class="nav-link"
                     href="#"
-                    onClick={() => assignComponent("SIGNUP")}
+                    onClick={() => assignComponent(COMPONENTS.SIGNUP)}
                   >
                     Sign up
                   </a>
@@ -110,9 +99,9 @@ function App() {
   };
   return (
     <div className="App">
-      {(selectedComponent === "LOGIN" || selectedComponent === "SIGNUP") &&
+      {(selectedComponent === COMPONENTS.LOGIN || selectedComponent === COMPONENTS.SIGNUP) &&
         getLoginSignUpWrapper()}
-      {!(selectedComponent === "LOGIN" || selectedComponent === "SIGNUP") &&
+      {!(selectedComponent === COMPONENTS.LOGIN || selectedComponent === COMPONENTS.SIGNUP) &&
         getComponent()}
     </div>
   );

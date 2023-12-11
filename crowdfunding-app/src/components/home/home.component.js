@@ -2,12 +2,16 @@ import React, { Component } from "react";
 import Profile from "../profile/profile.component";
 import Projects from "../projects/projects.component";
 import Transactions from '../transactions/transactions.component'
+import { COMPONENTS, ACCOUNT_TYPE } from '../../helpers/constants';
+
+
+import './home.scss'
 
 export default class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedComponent: "PROJECTS",
+      selectedComponent: COMPONENTS.PROJECTS,
     };
   }
 
@@ -20,11 +24,11 @@ export default class Home extends Component {
   getComponent = () => {
     const {user} = this.props;
     switch (this.state.selectedComponent) {
-      case "PROFILE":
+      case COMPONENTS.PROFILE:
         return <Profile user={user}/>;
-      case "PROJECTS":
+      case COMPONENTS.PROJECTS:
         return <Projects user={user}/>;
-      case "TRANSACTIONS": 
+      case COMPONENTS.TRANSACTIONS: 
         return <Transactions user={user}/>
       default:
         return <></>;
@@ -32,7 +36,7 @@ export default class Home extends Component {
   };
 
   render() {
-    const { user } = this.props;
+    const { user, onLogout } = this.props;
     return (
       <>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -57,7 +61,7 @@ export default class Home extends Component {
                   <a
                     class="nav-link"
                     href="#"
-                    onClick={() => this.assignComponent("PROFILE")}
+                    onClick={() => this.assignComponent(COMPONENTS.PROFILE)}
                   >
                     Profile
                   </a>
@@ -67,26 +71,28 @@ export default class Home extends Component {
                     class="nav-link active"
                     aria-current="page"
                     href="#"
-                    onClick={() => this.assignComponent("PROJECTS")}
+                    onClick={() => this.assignComponent(COMPONENTS.PROJECTS)}
                   >
                     Projects
                   </a>
                 </li>
                 {
-                  user.role === 'DONOR' && 
+                  user.role === ACCOUNT_TYPE.DONOR && 
                   <li class="nav-item">
                   <a
                     class="nav-link active"
                     aria-current="page"
                     href="#"
-                    onClick={() => this.assignComponent("TRANSACTIONS")}
+                    onClick={() => this.assignComponent(COMPONENTS.TRANSACTIONS)}
                   >
                     Transactions
                   </a>
                 </li>
                 }
               </ul>
-              <h6 class='text-muted'>Welcome, {`${user.firstName} ${user.lastName}`}</h6>
+
+              <h6 class='text-muted welcome-text'>Welcome, {`${user.firstName} ${user.lastName}`}</h6>
+              <button class="btn btn-outline-secondary logout-button" type="button" onClick={onLogout}>Logout</button>
             </div>
           </div>
         </nav>

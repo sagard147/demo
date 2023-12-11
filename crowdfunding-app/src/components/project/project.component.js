@@ -1,85 +1,106 @@
 import React, { Component } from "react";
 import "./project.scss";
+import {
+  ACCOUNT_TYPE,
+  GENERIC_ERROR_MESSAGE,
+  CROWDFUND_API_ENDPOINT,
+  CROWDFUND_API_KEY,
+} from "../../helpers/constants";
+import { Alert } from "../../helpers/components/Alert";
 
-export default class Projects extends Component {
+export default class Project extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      projectDonations: [
-        {
-          id: 1,
-          transactionDate: "2023-12-05",
-          userName: "DonSam hey",
-          fundAmount: 100,
-          currency: "INR",
-          userId: 3,
-          projectId: 1,
-          projectName: "Adidas",
-        },
-        {
-          id: 2,
-          transactionDate: "2023-12-05",
-          userName: "DonSam hey",
-          fundAmount: 200,
-          currency: "INR",
-          userId: 3,
-          projectId: 2,
-          projectName: "Nike",
-        },
-        {
-          id: 3,
-          transactionDate: "2023-12-05",
-          userName: "DonRam bye",
-          fundAmount: 200,
-          currency: "INR",
-          userId: 4,
-          projectId: 1,
-          projectName: "Adidas",
-        },
-        {
-          id: 4,
-          transactionDate: "2023-12-05",
-          userName: "DonSam hey",
-          fundAmount: 500,
-          currency: "INR",
-          userId: 3,
-          projectId: 4,
-          projectName: "Run8",
-        },
-      ],
+      projectDonations: [],
       showAddDonationForm: false,
       addDonationFormError: false,
       donationAmount: null,
+      errorMessage: "",
+      donationFetchErrorMessage: "",
+      projectLoadErrorMessage: "",
+      currentProject: props.selectedProject,
     };
   }
 
-  componentDidMount = () => {
-    // API call
-    // setstate  - projectDonations
-    const { selectedProject, user } = this.props;
-    var url = "http://localhost:8080/api/v1/donations/project/"+selectedProject.id;
-    const fetchDonations = async (onSuccess) => {
-          try {
-            const response = await fetch(url);
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            const result = await response.json();
-            console.log(result);
-            debugger;
-            onSuccess(result);
-          } catch (error) {
-            console.log("Network response was not ok", error);
-          }
-        };
-        fetchDonations((projects) =>{
-            if(user.accountType === "DONOR"){
-                projects = projects.filter((project)=>project.userId === user.id);
-            }
-            console.log(projects);
-            this.setState({ projectDonations: projects });
-        });
+  updateSelectedProject = () => {
+    var url =
+      CROWDFUND_API_ENDPOINT + "/projects/" + this.state.currentProject.id;
 
+    const fetchProject = async (onSuccess) => {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            "Content-Type": "application/json",
+            "Api-Key": CROWDFUND_API_KEY,
+          },
+        });
+        if (!response.ok) {
+          throw response.text();
+        }
+        const result = await response.json();
+        console.log(result);
+        onSuccess(result);
+      } catch (error) {
+        console.log("Network response was not ok", error);
+        this.setState({ projectLoadErrorMessage: GENERIC_ERROR_MESSAGE });
+        error?.then?.((text) => {
+          const errorObj = JSON.parse(text);
+          this.setState({
+            projectLoadErrorMessage:
+              GENERIC_ERROR_MESSAGE + ` ${errorObj?.message}`,
+          });
+        });
+      }
+    };
+    fetchProject((result) => {
+      this.setState({
+        currentProject: result,
+      });
+    });
+  };
+
+  fetchProjectDonations = () => {
+    const { user } = this.props;
+    const { currentProject } = this.state;
+    var url =
+      CROWDFUND_API_ENDPOINT + "/donations/project/" + currentProject.id;
+    const fetchDonations = async (onSuccess) => {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            "Content-Type": "application/json",
+            "Api-Key": CROWDFUND_API_KEY,
+          },
+        });
+        if (!response.ok) {
+          throw response.text();
+        }
+        const result = await response.json();
+        onSuccess(result);
+      } catch (error) {
+        console.log("Network response was not ok", error);
+        this.setState({ donationFetchErrorMessage: GENERIC_ERROR_MESSAGE });
+        error?.then?.((text) => {
+          const errorObj = JSON.parse(text);
+          this.setState({
+            donationFetchErrorMessage:
+              GENERIC_ERROR_MESSAGE + ` ${errorObj?.message}`,
+          });
+        });
+      }
+    };
+    fetchDonations((projects) => {
+      if (user.accountType === ACCOUNT_TYPE.DONOR) {
+        projects = projects.filter((project) => project.userId === user.id);
+      }
+      console.log(projects);
+      this.setState({ projectDonations: projects });
+    });
+  };
+
+  componentDidMount = () => {
+    this.fetchProjectDonations();
   };
 
   addDonationHandler = () => {
@@ -89,74 +110,87 @@ export default class Projects extends Component {
   };
 
   addDonationInputChangeHandler = (e) => {
-    const { selectedProject } = this.props;
-    this.setState(
-      {
-        addDonationFormError: Number(e?.target?.value) + selectedProject.fundCollected > selectedProject.fundDemand,
-        donationAmount: Number(e?.target?.value)
-      }
-    );
+    const { currentProject } = this.state;
+    this.setState({
+      addDonationFormError:
+        Number(e?.target?.value) + currentProject.fundCollected >
+        currentProject.fundDemand,
+      donationAmount: Number(e?.target?.value),
+      errorMessage: "",
+    });
   };
 
   addNewDonationHandler = () => {
-    const { selectedProject, user } = this.props;
-    const {projectDonations, addDonationFormError, donationAmount} = this.state;
+    const { user } = this.props;
+    const { currentProject } = this.state;
+    const { addDonationFormError, donationAmount } = this.state;
     if (!addDonationFormError) {
-        const addDonation = async (onSuccess) => {
-              try {
-                const response = await fetch("http://localhost:8080/api/v1/donations/addDonation", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    projectId: selectedProject.id,
-                    userId: user.id,
-                    fundAmount: this.state.donationAmount,
-                    currency:"INR"
-                  }),
-                });
+      const addDonation = async (onSuccess) => {
+        try {
+          const response = await fetch(
+            CROWDFUND_API_ENDPOINT + "/donations/addDonation",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Api-Key": CROWDFUND_API_KEY,
+              },
+              body: JSON.stringify({
+                projectId: currentProject.id,
+                userId: user.id,
+                fundAmount: donationAmount,
+                currency: "INR",
+              }),
+            }
+          );
 
-                if (!response.ok) {
-                  throw new Error("Network response was not ok");
-                }
+          if (!response.ok) {
+            throw response.text();
+          }
 
-                const result = await response.json();
-                onSuccess(result);
-              } catch (error) {
-                console.log("Network response was not ok", error);
-              }
-            };
-
-
-        addDonation((result) => {
-              console.log("Donation added successfully",result);
-              result.transactionDate = new Date(result.transactionDate).toISOString().split('T')[0];
-              let projectDonationsArr = projectDonations;
-                      projectDonationsArr.push(result);
-                    this.setState({
-                      projectDonations: projectDonationsArr,
-                      donationAmount: ''
-                    });
+          const result = await response.json();
+          onSuccess(result);
+        } catch (error) {
+          console.log("Network response was not ok", error);
+          this.setState({ errorMessage: GENERIC_ERROR_MESSAGE });
+          error?.then?.((text) => {
+            const errorObj = JSON.parse(text);
+            this.setState({
+              errorMessage: GENERIC_ERROR_MESSAGE + ` ${errorObj?.message}`,
             });
+          });
+        }
+      };
+
+      addDonation((result) => {
+        console.log("Donation added successfully", result);
+        this.fetchProjectDonations();
+        this.updateSelectedProject();
+      });
     }
-  }
+  };
 
   render() {
-    const { selectedProject, backHandler, user } = this.props;
-    const { projectDonations, showAddDonationForm, addDonationFormError } =
-      this.state;
+    const { backHandler, user, editProject } = this.props;
+    const { currentProject } = this.state;
+    const {
+      projectDonations,
+      showAddDonationForm,
+      addDonationFormError,
+      errorMessage,
+      donationFetchErrorMessage,
+    } = this.state;
     return (
       <>
         <div class="selectedproject-card card">
           <div class="card-body">
-            <h3 class="card-title">{selectedProject.title}</h3>
+            <h3 class="card-title">{currentProject.title}</h3>
             <div class="container selectedproject-container">
               <div class="row">
                 <div class="col">
                   <strong>Description</strong>
                 </div>
-                <div class="col-8">{selectedProject.description}</div>
+                <div class="col-8">{currentProject.description}</div>
               </div>
               <br />
               <div class="row">
@@ -164,7 +198,7 @@ export default class Projects extends Component {
                   <strong>Fund Demand</strong>
                 </div>
                 <div class="col-8">
-                  {selectedProject.currency} {selectedProject.fundDemand}
+                  {currentProject.currency} {currentProject.fundDemand}
                 </div>
               </div>
               <br />
@@ -173,64 +207,110 @@ export default class Projects extends Component {
                   <strong>Fund Allocated</strong>
                 </div>
                 <div class="col-8">
-                  {selectedProject.currency} {selectedProject.fundCollected}
+                  {currentProject.currency} {currentProject.fundCollected}
                 </div>
               </div>
               <br />
-              {user.role === "INNOVATOR" && (
+              {user.role === ACCOUNT_TYPE.INNOVATOR && (
                 <>
-                  <center>
-                    <h5>Transactions</h5>
-                  </center>
-                  <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Donor Name</th>
-                        <th scope="col">Donor Contact</th>
-                        <th scope="col">Contribution</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {projectDonations.map((projectDonation) => (
-                        <tr>
-                          <th scope="row">{projectDonation.transactionDate}</th>
-                          <td>{projectDonation.userName}</td>
-                          <td>{projectDonation.userEmail}</td>
-                          <td>
-                            {projectDonation.currency}{" "}
-                            {projectDonation.fundAmount}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  {projectDonations.length === 0 && (
+                    <center>
+                      <h6 class="text-muted">
+                        There are no donor transactions for this project yet.
+                        Please check back later.
+                      </h6>
+                    </center>
+                  )}
+                  {projectDonations.length !== 0 && (
+                    <>
+                      <center>
+                        <h5>Transactions</h5>
+                      </center>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Donor Name</th>
+                            <th scope="col">Donor Contact</th>
+                            <th scope="col">Contribution</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {projectDonations.map((projectDonation) => (
+                            <tr>
+                              <th scope="row">
+                                {projectDonation.transactionDate}
+                              </th>
+                              <td>{projectDonation.userName}</td>
+                              <td>{projectDonation.userEmail}</td>
+                              <td>
+                                {projectDonation.currency}{" "}
+                                {projectDonation.fundAmount}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
+                  {currentProject.fundCollected === 0 && (
+                    <>
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onClick={editProject}
+                      >
+                        Edit Project
+                      </button>
+                      &nbsp; &nbsp;
+                    </>
+                  )}
                 </>
               )}
-              {user.role === "DONOR" && (
+              {user.role === ACCOUNT_TYPE.DONOR && (
                 <>
-                  <center>
-                    <h5>Transactions</h5>
-                  </center>
-                  <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Contribution</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {projectDonations.map((projectDonation) => (
-                        <tr>
-                          <th scope="row">{projectDonation.transactionDate}</th>
-                          <td>
-                            {projectDonation.currency}{" "}
-                            {projectDonation.fundAmount}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  {projectDonations.length === 0 && (
+                    <>
+                      {donationFetchErrorMessage && (
+                        <Alert errorMessage={donationFetchErrorMessage} />
+                      )}
+                      {!donationFetchErrorMessage && (
+                        <center>
+                          <h6 class="text-muted">
+                            You have not made any donations to this project.
+                          </h6>
+                        </center>
+                      )}
+                    </>
+                  )}
+                  {projectDonations.length !== 0 && (
+                    <>
+                      <center>
+                        <h5>Transactions</h5>
+                      </center>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Contribution</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {projectDonations.map((projectDonation) => (
+                            <tr>
+                              <th scope="row">
+                                {projectDonation.transactionDate}
+                              </th>
+                              <td>
+                                {projectDonation.currency}{" "}
+                                {projectDonation.fundAmount}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
                   {!showAddDonationForm && (
                     <button
                       type="button"
@@ -255,18 +335,25 @@ export default class Projects extends Component {
                             />
                           </div>
                           <div class="col">
-                            <button type="button" class="btn btn-secondary" onClick={this.addNewDonationHandler}>
+                            <button
+                              type="button"
+                              class="btn btn-secondary"
+                              onClick={this.addNewDonationHandler}
+                            >
                               Add
                             </button>
                           </div>
                         </div>
                         <br />
                         <div class="row">
+                          {errorMessage && (
+                            <Alert errorMessage={errorMessage} />
+                          )}
                           {addDonationFormError && (
-                            <div class="alert alert-danger" role="alert">
-                              Donation amount exceeds the required amount for
-                              the project
-                            </div>
+                            <Alert
+                              errorMessage="Donation amount exceeds the required amount for
+                            the project"
+                            />
                           )}
                         </div>
                       </div>

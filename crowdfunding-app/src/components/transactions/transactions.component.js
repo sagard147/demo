@@ -1,105 +1,99 @@
 import React, { Component } from "react";
-import './transactions.css';
+import "./transactions.css";
+import {
+  GENERIC_ERROR_MESSAGE,
+  CROWDFUND_API_ENDPOINT,
+  CROWDFUND_API_KEY,
+} from "../../helpers/constants";
+import { Alert } from "../../helpers/components/Alert";
 
 export default class Transactions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      transactions: [
-        {
-          id: 1,
-          transactionDate: "2023-12-05",
-          userName: "DonSam hey",
-          fundAmount: 100,
-          currency: "INR",
-          userId: 3,
-          projectId: 1,
-          projectName: "Adidas",
-        },
-        {
-          id: 2,
-          transactionDate: "2023-12-05",
-          userName: "DonSam hey",
-          fundAmount: 200,
-          currency: "INR",
-          userId: 3,
-          projectId: 2,
-          projectName: "Nike",
-        },
-        {
-          id: 3,
-          transactionDate: "2023-12-05",
-          userName: "DonRam bye",
-          fundAmount: 200,
-          currency: "INR",
-          userId: 4,
-          projectId: 1,
-          projectName: "Adidas",
-        },
-        {
-          id: 4,
-          transactionDate: "2023-12-05",
-          userName: "DonSam hey",
-          fundAmount: 500,
-          currency: "INR",
-          userId: 3,
-          projectId: 4,
-          projectName: "Run8",
-        },
-      ],
+      transactions: [],
+      errorMessage: "",
     };
   }
 
   componentDidMount = () => {
-      const { selectedProject, user } = this.props;
-      var url = "http://localhost:8080/api/v1/donations/user/"+user.id;
-      const fetchDonations = async (onSuccess) => {
-            try {
-              const response = await fetch(url);
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              const result = await response.json();
-              console.log(result);
-              debugger;
-              onSuccess(result);
-            } catch (error) {
-              console.log("Network response was not ok", error);
-            }
-          };
-
-          fetchDonations((result) =>{
-            console.log(result);
-            this.setState({ transactions: result });
-            debugger;
+    const { user } = this.props;
+    var url = CROWDFUND_API_ENDPOINT + "/donations/user/" + user.id;
+    const fetchDonations = async (onSuccess) => {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            "Content-Type": "application/json",
+            "Api-Key": CROWDFUND_API_KEY,
+          },
+        });
+        if (!response.ok) {
+          throw response.text();
+        }
+        const result = await response.json();
+        console.log(result);
+        onSuccess(result);
+      } catch (error) {
+        console.log("Network response was not ok", error);
+        this.setState({ errorMessage: GENERIC_ERROR_MESSAGE });
+        error?.then?.((text) => {
+          const errorObj = JSON.parse(text);
+          this.setState({
+            errorMessage: GENERIC_ERROR_MESSAGE + ` ${errorObj?.message}`,
           });
+        });
+      }
     };
 
+    fetchDonations((result) => {
+      console.log(result);
+      this.setState({ transactions: result });
+    });
+  };
+
   render() {
-    const { transactions } = this.state;
+    const { transactions, errorMessage } = this.state;
     return (
-      <div class="container transactions-container">
-        <table class="table table-bordered table-light">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Project Name</th>
-              <th scope="col">Donation</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((transaction) => (
-              <tr>
-                <th scope="row">{transaction.transactionDate}</th>
-                <td>{transaction.projectName}</td>
-                <td>
-                  {transaction.currency} {transaction.fundAmount}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
+      <>
+        {errorMessage && <Alert errorMessage={errorMessage} />}
+        {!errorMessage && transactions.length === 0 && (
+          <div class="container">
+            <div class="row">
+              <center>
+                <h6 class="text-muted">
+                  <br />
+                  There are no transactions currently. Donate to any project and
+                  check back later
+                </h6>
+              </center>
+            </div>
+          </div>
+        )}
+        {transactions.length !== 0 && (
+          <div class="container transactions-container">
+            <table class="table table-bordered table-light">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Project Name</th>
+                  <th scope="col">Donation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((transaction) => (
+                  <tr>
+                    <th scope="row">{transaction.transactionDate}</th>
+                    <td>{transaction.projectName}</td>
+                    <td>
+                      {transaction.currency} {transaction.fundAmount}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </>
     );
   }
 }
